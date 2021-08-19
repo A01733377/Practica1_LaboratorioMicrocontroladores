@@ -5510,11 +5510,13 @@ ENDM
 PSECT udata
  INPUT:
  DS 1
+ INPUT2:
+ DS 1
 
 ;CONSTANT MASK = 0b00001111
 
 ;****************Programa principal **************************************************
- psect code;barfunc,local,class=CODE,delta=2 ; PIC10/12/16
+ PSECT code;barfunc,local,class=CODE,delta=2 ; PIC10/12/16
 
    ORG 0x000 ;reset vector
      GOTO MAIN ;go to the main routine
@@ -5536,13 +5538,25 @@ MAIN:
 LOOP:
 
    MOVF PORTB, W ;mover portb al acumulador
-   ANDLW 0b00001111 ;aplicar and (mascara)
+   ANDLW 0x0F ;aplicar and (mascara)
    MOVWF INPUT
 
-   MOVLW 0 ;mover cero al acumulador
+   MOVF PORTB, W ;mover portb al acumulador
+   ANDLW 0xF0 ;aplicar and (mascara)
+   MOVWF INPUT2
+
+
+   MOVLW 0x00 ;mover cero al acumulador
    SUBWF INPUT, W ;restar 0 a la entrada
    BZ CERO ;caso 0
 
+   MOVLW 0x02 ;mover cero al acumulador
+   SUBWF INPUT, W ;restar 0 a la entrada
+   BZ DOS ;caso 0
+
+
+
+   BRA DEFAULT
 CERO:
           ;salida 0 en display
       BSF PORTD, 0
@@ -5551,11 +5565,30 @@ CERO:
       BSF PORTD, 3
       BSF PORTD, 4
       BSF PORTD, 5
+      BCF PORTD, 6
+      GOTO LOOP
+
+DOS:
+          ;salida 2 en display
+      BSF PORTD, 0
+      BSF PORTD, 1
+      BCF PORTD, 2
+      BSF PORTD, 3
+      BSF PORTD, 4
+      BCF PORTD, 5
       BSF PORTD, 6
-      BCF PORTD, 7
       GOTO LOOP
 
 
+DEFAULT:
+      BSF PORTD, 0 ;salida N en display
+      BSF PORTD, 1
+      BSF PORTD, 2
+      BCF PORTD, 3
+      BSF PORTD, 4
+      BSF PORTD, 5
+      BCF PORTD, 6
+      GOTO LOOP
 
 
 
