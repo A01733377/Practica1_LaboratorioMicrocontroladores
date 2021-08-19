@@ -93,13 +93,25 @@ MAIN:
 		CALL 	INITIALIZE
 LOOP:
     	
-			MOVF	PORTB, W ;mover portb al acumulador
-			ANDLW	0b00001111	    ;aplicar and (mascara)
+			MOVF	PxORTB, W ;mover portb al acumulador
+			ANDLW	0X0F	    ;aplicar and (mascara)
 			MOVWF   INPUT
 			
-			MOVLW	0		    ;mover cero al acumulador
-			SUBWF	INPUT,	W	    ;restar 0 a la entrada
-			BZ	CERO		    ;caso 0 
+			MOVF    PORTB, W   ;mover cero al acumulador
+			ANDLW	0xF0	    ;restar 0 a la entrada
+			MOVWF	INPUT2      ;caso 0 
+			
+			MOVLW   0x00
+			SUBWF   INPUT, W
+			BZ      CERO
+			
+			MOVLW   0x01
+			SUBWF   INPUT, W
+			BZ      UNO
+			
+			MOVLW   0x02
+			SUBWF   INPUT, W
+			BZ      DOS
 			
 CERO:
 						    ;salida 0 en display
@@ -112,7 +124,21 @@ CERO:
 		    BSF PORTD, 6
 		    BCF PORTD, 7
 		    GOTO LOOP
+TRES:
+						    ;salida 3 en display
+		    BSF PORTD, 0    
+		    BSF PORTD, 1
+		    BSF PORTD, 2
+		    BSF PORTD, 3
+		    BCF PORTD, 4
+		    BCF PORTD, 5
+		    BSF PORTD, 6
+		    BSF PORTD, 7
+		    GOTO LOOP
+		    
+	
 		
+	
 		
 			
    
