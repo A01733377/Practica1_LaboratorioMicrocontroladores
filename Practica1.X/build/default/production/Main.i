@@ -5443,24 +5443,24 @@ ENDM
 
 
 ; CONFIG1L
-  CONFIG PLLDIV = 5 ; PLL Prescaler Selection bits (Divide by 5 (20 MHz oscillator input))
-  CONFIG CPUDIV = OSC3_PLL4 ; System Clock Postscaler Selection bits ([Primary Oscillator Src: /3][96 MHz PLL Src: /4])
-  CONFIG USBDIV = 2 ; USB Clock Selection bit (used in Full-Speed USB mode only; UCFG:((UCFG) and 0FFh), 2, a = 1) (USB clock source comes from the 96 MHz PLL divided by 2)
+  CONFIG PLLDIV = 1 ; PLL Prescaler Selection bits (No prescale (4 MHz oscillator input drives PLL directly))
+  CONFIG CPUDIV = OSC1_PLL2 ; System Clock Postscaler Selection bits ([Primary Oscillator Src: /1][96 MHz PLL Src: /2])
+  CONFIG USBDIV = 1 ; USB Clock Selection bit (used in Full-Speed USB mode only; UCFG:((UCFG) and 0FFh), 2, a = 1) (USB clock source comes directly from the primary oscillator block with no postscale)
 
 ; CONFIG1H
-  CONFIG FOSC = HSPLL_HS ; Oscillator Selection bits (HS oscillator, PLL enabled (HSPLL))
+  CONFIG FOSC = XT_XT ; Oscillator Selection bits (XT oscillator (XT))
   CONFIG FCMEN = OFF ; Fail-Safe Clock Monitor Enable bit (Fail-Safe Clock Monitor disabled)
   CONFIG IESO = OFF ; Internal/External Oscillator Switchover bit (Oscillator Switchover mode disabled)
 
 ; CONFIG2L
   CONFIG PWRT = ON ; Power-up Timer Enable bit (PWRT enabled)
-; CONFIG ((RCON) and 0FFh), 0, a = OFF ; Brown-out Reset Enable bits (Brown-out Reset disabled in hardware and software)
+  ;CONFIG ((RCON) and 0FFh), 0, a = ON ; Brown-out Reset Enable bits (Brown-out Reset enabled in hardware only (((RCON) and 0FFh), 6, a is disabled))
   CONFIG BORV = 3 ; Brown-out Reset Voltage bits (Minimum setting 2.05V)
   CONFIG VREGEN = OFF ; USB Voltage Regulator Enable bit (USB voltage regulator disabled)
 
 ; CONFIG2H
   CONFIG WDT = OFF ; Watchdog Timer Enable bit (WDT disabled (control is placed on the ((WDTCON) and 0FFh), 0, a bit))
-  CONFIG WDTPS = 32768 ; Watchdog Timer Postscale Select bits (1:32768)
+  CONFIG WDTPS = 1 ; Watchdog Timer Postscale Select bits (1:1)
 
 ; CONFIG3H
   CONFIG CCP2MX = OFF ; ((PORTC) and 0FFh), 1, a MUX bit (((PORTC) and 0FFh), 1, a input/output is multiplexed with ((PORTB) and 0FFh), 3, a)
@@ -5504,13 +5504,13 @@ ENDM
 ; CONFIG7H
   CONFIG EBTRB = OFF ; Boot Block Table Read Protection bit (Boot block (000000-0007FFh) is not protected from table reads executed in other blocks)
 
-
-
 ;****************Definicion de variables********************************
 PSECT udata
  INPUT:
  DS 1
  INPUT2:
+ DS 1
+RESULTADO:
  DS 1
 
 ;CONSTANT MASK = 0b00001111
@@ -5536,10 +5536,11 @@ INITIALIZE:
 MAIN:
   CALL INITIALIZE
 LOOP:
-
-   MOVF PORTB, W ;mover portb al acumulador
+   MOVF PORTB, W ;mover portb al registro input
    ANDLW 0x0F ;aplicar and (mascara)
    MOVWF INPUT
+
+
 
    MOVF PORTB, W ;mover portb al acumulador
    ANDLW 0xF0 ;aplicar and (mascara)
@@ -5547,47 +5548,46 @@ LOOP:
 
 
    MOVLW 0x00 ;mover cero al acumulador
-   SUBWF INPUT, W ;restar 0 a la entrada
+   SUBWF INPUT, 0,1 ;restar 0 a la entrada
    BZ CERO ;caso 0
 
    MOVLW 0x02 ;mover cero al acumulador
    SUBWF INPUT, W ;restar 0 a la entrada
    BZ DOS ;caso 0
 
+   MOVLW 0x03 ;mover cero al acumulador
+   SUBWF INPUT, W ;restar 0 a la entrada
+   BZ TRES ;caso 0
 
+   MOVLW 0x04 ;mover cero al acumulador
+   SUBWF INPUT, W ;restar 0 a la entrada
+   BZ CUATRO ;caso 0
 
    BRA DEFAULT
 CERO:
           ;salida 0 en display
-      BSF PORTD, 0
-      BSF PORTD, 1
-      BSF PORTD, 2
-      BSF PORTD, 3
-      BSF PORTD, 4
-      BSF PORTD, 5
-      BCF PORTD, 6
+      MOVLW 00111111B
+      MOVWF PORTD
       GOTO LOOP
 
 DOS:
-          ;salida 2 en display
-      BSF PORTD, 0
-      BSF PORTD, 1
-      BCF PORTD, 2
-      BSF PORTD, 3
-      BSF PORTD, 4
-      BCF PORTD, 5
-      BSF PORTD, 6
+      MOVLW 01011011B ;salida 2 en display
+      MOVWF PORTD
       GOTO LOOP
 
+TRES:
+      MOVLW 01001111B ;salida 3 en display
+      MOVWF PORTD
+      GOTO LOOP
+
+CUATRO:
+      MOVLW 01001111B ;salida 4 en display
+      MOVWF PORTD
+      GOTO LOOP
 
 DEFAULT:
-      BSF PORTD, 0 ;salida N en display
-      BSF PORTD, 1
-      BSF PORTD, 2
-      BCF PORTD, 3
-      BSF PORTD, 4
-      BSF PORTD, 5
-      BCF PORTD, 6
+      MOVLW 00110111B ;salida N en display
+      MOVWF PORTD
       GOTO LOOP
 
 
