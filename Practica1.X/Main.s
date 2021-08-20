@@ -226,27 +226,27 @@ DIEZ:
 		    GOTO LOOP
 		    
 ONCE:						  
-		    MOVLW 00011111B		    ;salida B en display
+		    MOVLW 01111100B		    ;salida B en display
 		    MOVWF PORTD
 		    GOTO LOOP
 		    
 DOCE:						  
-		    MOVLW 01001110B		    ;salida C en display
+		    MOVLW 00111001B		    ;salida C en display
 		    MOVWF PORTD
 		    GOTO LOOP		    
 		    
 TRECE:						  
-		    MOVLW 00111101B		    ;salida D en display
+		    MOVLW 01011110B		    ;salida D en display
 		    MOVWF PORTD
 		    GOTO LOOP
 		    
 CATORCE:						  
-		    MOVLW 0101111B		    ;salida E en display
+		    MOVLW 01111001B		    ;salida E en display
 		    MOVWF PORTD
 		    GOTO LOOP	
 		    
 QUINCE:						  
-		    MOVLW 01000111B		    ;salida F en display
+		    MOVLW 01110001B		    ;salida F en display
 		    MOVWF PORTD
 		    GOTO LOOP
 		    
