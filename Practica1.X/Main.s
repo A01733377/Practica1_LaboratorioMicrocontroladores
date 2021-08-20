@@ -106,7 +106,11 @@ LOOP:
 			
 			MOVLW	0x00		    ;mover cero al acumulador
 			SUBWF	INPUT,	0,1	    ;restar 0 a la entrada
-			BZ	CERO		    ;caso 0 
+			BZ	CERO		    ;caso 0
+			
+			MOVLW	0x01		    ;mover cero al acumulador
+			SUBWF	INPUT,	W	    ;restar 0 a la entrada
+			BZ	UNO		    ;caso 0 
 			
 			MOVLW	0x02		    ;mover cero al acumulador
 			SUBWF	INPUT,	W	    ;restar 0 a la entrada
@@ -147,6 +151,11 @@ CERO:
 		    MOVLW 00111111B
 		    MOVWF PORTD
 		    GOTO LOOP
+		    
+UNO:
+		    MOVLW 00000110B		    ;salida 1 en display
+		    MOVWF PORTD
+		    GOTO LOOP	    
 		    
 DOS:
 		    MOVLW 01011011B		    ;salida 2 en display
