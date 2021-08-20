@@ -1,24 +1,24 @@
 #include <xc.inc>
 
 ; CONFIG1L
-  CONFIG  PLLDIV = 1            ; PLL Prescaler Selection bits (No prescale (4 MHz oscillator input drives PLL directly))
-  CONFIG  CPUDIV = OSC1_PLL2    ; System Clock Postscaler Selection bits ([Primary Oscillator Src: /1][96 MHz PLL Src: /2])
-  CONFIG  USBDIV = 1            ; USB Clock Selection bit (used in Full-Speed USB mode only; UCFG:FSEN = 1) (USB clock source comes directly from the primary oscillator block with no postscale)
+  CONFIG  PLLDIV = 5            ; PLL Prescaler Selection bits (Divide by 5 (20 MHz oscillator input))
+  CONFIG  CPUDIV = OSC3_PLL4    ; System Clock Postscaler Selection bits ([Primary Oscillator Src: /3][96 MHz PLL Src: /4])
+  CONFIG  USBDIV = 2            ; USB Clock Selection bit (used in Full-Speed USB mode only; UCFG:FSEN = 1) (USB clock source comes from the 96 MHz PLL divided by 2)
 
 ; CONFIG1H
-  CONFIG  FOSC = XT_XT          ; Oscillator Selection bits (XT oscillator (XT))
+  CONFIG  FOSC = HSPLL_HS       ; Oscillator Selection bits (HS oscillator, PLL enabled (HSPLL))
   CONFIG  FCMEN = OFF           ; Fail-Safe Clock Monitor Enable bit (Fail-Safe Clock Monitor disabled)
   CONFIG  IESO = OFF            ; Internal/External Oscillator Switchover bit (Oscillator Switchover mode disabled)
 
 ; CONFIG2L
   CONFIG  PWRT = ON             ; Power-up Timer Enable bit (PWRT enabled)
-  ;CONFIG  BOR = ON              ; Brown-out Reset Enable bits (Brown-out Reset enabled in hardware only (SBOREN is disabled))
+;  CONFIG  BOR = OFF             ; Brown-out Reset Enable bits (Brown-out Reset disabled in hardware and software)
   CONFIG  BORV = 3              ; Brown-out Reset Voltage bits (Minimum setting 2.05V)
   CONFIG  VREGEN = OFF          ; USB Voltage Regulator Enable bit (USB voltage regulator disabled)
 
 ; CONFIG2H
   CONFIG  WDT = OFF             ; Watchdog Timer Enable bit (WDT disabled (control is placed on the SWDTEN bit))
-  CONFIG  WDTPS = 1             ; Watchdog Timer Postscale Select bits (1:1)
+  CONFIG  WDTPS = 32768         ; Watchdog Timer Postscale Select bits (1:32768)
 
 ; CONFIG3H
   CONFIG  CCP2MX = OFF          ; CCP2 MUX bit (CCP2 input/output is multiplexed with RB3)
@@ -100,31 +100,52 @@ LOOP:
 			
 			MOVF	PORTB, W	    ;mover portb al acumulador
 			ANDLW	0xF0	            ;aplicar and (mascara)
-			MOVWF   INPUT2
-			RRCF    INPUT2, 1, 0
-			RRCF    INPUT2, 1, 0
-			RRCF    INPUT2, 1, 0
-			RRCF    INPUT2, 1, 0
+			MOVWF   INPUT2		    ;Se mueve el resultado al registro input2
+			SWAPF   INPUT2, 1	    ;Se hace un swap (inversion de nibbles de imput2 y se guarda ahi mismo
 			
-			MOVF    INPUT
-			ADDWF   INPUT2,W
-			MOVWF   RESULT
+			MOVF    INPUT, W	    ;Se manda a llamar al acumulador el primer sumando (input1)
+			ADDWF   INPUT2,W	    ;al acumulador se le suma input 2 (input + input2)
+			MOVWF   RESULT		    ;el resultado se guarda en el registro result
 			
-			MOVLW	0x00		    ;mover cero al acumulador
+			MOVLW	0x00		    ;mover 0 al acumulador
 			SUBWF	RESULT,	0,1	    ;restar 0 a la entrada
 			BZ	CERO		    ;caso 0 
 			
-			MOVLW	0x02		    ;mover cero al acumulador
-			SUBWF	RESULT,	W	    ;restar 0 a la entrada
-			BZ	DOS		    ;caso 0 
+			MOVLW	0x01		    ;mover 1 al acumulador
+			SUBWF	RESULT,	0,1	    ;restar 1 a la entrada
+			BZ	UNO		    ;caso 1 
 			
-			MOVLW	0x03		    ;mover cero al acumulador
-			SUBWF	RESULT,	W	    ;restar 0 a la entrada
-			BZ	TRES		    ;caso 0 
+			MOVLW	0x02		    ;mover 2 al acumulador
+			SUBWF	RESULT,	W	    ;restar 2 a la entrada
+			BZ	DOS		    ;caso 2 
 			
-			MOVLW	0x04		    ;mover cero al acumulador
-			SUBWF	RESULT,	W	    ;restar 0 a la entrada
-			BZ	CUATRO		    ;caso 0 
+			MOVLW	0x03		    ;mover 3 al acumulador
+			SUBWF	RESULT,	W	    ;restar 3 a la entrada
+			BZ	TRES		    ;caso 3 
+			
+			MOVLW	0x04		    ;mover 4 al acumulador
+			SUBWF	RESULT,	W	    ;restar 4 a la entrada
+			BZ	CUATRO		    ;caso 4 
+			
+			MOVLW	0x05		    ;mover 5 al acumulador
+			SUBWF	RESULT,	W	    ;restar 5 a la entrada
+			BZ	CINCO		    ;caso 5 
+			
+			MOVLW	0x06		    ;mover 6 al acumulador
+			SUBWF	RESULT,	W	    ;restar 6 a la entrada
+			BZ	SEIS		    ;caso 6
+			
+			MOVLW	0x07		    ;mover 7 al acumulador
+			SUBWF	RESULT,	W	    ;restar 7 a la entrada
+			BZ	SIETE		    ;caso 7 
+			
+			MOVLW	0x08		    ;mover 8 al acumulador
+			SUBWF	RESULT,	W	    ;restar 8 a la entrada
+			BZ	OCHO		    ;caso 8 
+			
+			MOVLW	0x09		    ;mover 8 al acumulador
+			SUBWF	RESULT,	W	    ;restar 8 a la entrada
+			BZ	NUEVE		    ;caso 8 
 			
 			BRA	DEFAULT
 CERO:
@@ -132,22 +153,44 @@ CERO:
 		    MOVLW 00111111B
 		    MOVWF PORTD
 		    GOTO LOOP
-		    
+UNO:
+		    MOVLW 00000110B		    ;salida 1 en display
+		    MOVWF PORTD
+		    GOTO LOOP	    
 DOS:
 		    MOVLW 01011011B		    ;salida 2 en display
 		    MOVWF PORTD
 		    GOTO LOOP	    
-		    
 TRES:
-		    MOVLW 01001111B		    ;salida 3 en display
+		    MOVLW 01001111B		   ;salida 3 en display
 		    MOVWF PORTD
 		    GOTO LOOP
-		    
 CUATRO:						  
-		    MOVLW 01001111B		    ;salida 3 en display
+		    MOVLW 01100110B		    ;salida 4 en display
+		    MOVWF PORTD
+		    GOTO LOOP
+CINCO:						  
+		    MOVLW 01101101B		    ;salida 5 en display
 		    MOVWF PORTD
 		    GOTO LOOP
 		    
+SEIS:						  
+		    MOVLW 01111101B		    ;salida 6 en display
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+SIETE:						  
+		    MOVLW 00000111B		    ;salida 7 en display
+		    MOVWF PORTD
+		    GOTO LOOP
+OCHO:						  
+		    MOVLW 01111111B		    ;salida 8 en display
+		    MOVWF PORTD
+		    GOTO LOOP
+NUEVE:						  
+		    MOVLW 01101111B		    ;salida 9 en display
+		    MOVWF PORTD
+		    GOTO LOOP
 DEFAULT:	
 		    MOVLW 00110111B		    ;salida N en display
 		    MOVWF PORTD
@@ -155,5 +198,5 @@ DEFAULT:
 			
    
     			
-			END                       	;fin del programa
+END                       	;fin del programa
 
