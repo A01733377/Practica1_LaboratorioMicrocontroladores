@@ -101,7 +101,34 @@ LOOP:
 			SUBWF	INPUT,	W	    ;restar 0 a la entrada
 			BZ	CERO		    ;caso 0 
 			
-CERO:
+
+CERO:                 
+                        BSF PORTD, 0
+			BSF PORTD, 1
+			BSF PORTD, 2
+			BSF PORTD, 3
+			BSF PORTD, 4
+			BSF PORTD, 5
+			BCF PORTD, 6
+			GOTO LOOP 
+			
+UNO:                 
+                        BCF PORTD, 0
+			BSF PORTD, 1
+			BSF PORTD, 2
+			BCF PORTD, 3
+			BCF PORTD, 4
+			BCF PORTD, 5
+			BCF PORTD, 6
+CUATRO:                 
+                        BCF PORTD, 0
+			BSF PORTD, 1
+			BSF PORTD, 2
+			BCF PORTD, 3
+			BCF PORTD, 4
+			BSF PORTD, 5
+			BSF PORTD, 6
+			
 						    ;salida 0 en display
 		
 		
