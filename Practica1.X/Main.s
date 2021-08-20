@@ -147,28 +147,60 @@ LOOP:
 			SUBWF	RESULT,	W	    ;restar 8 a la entrada
 			BZ	NUEVE		    ;caso 8 
 			
+			MOVLW	0x0A		    
+			SUBWF	RESULT,	W	    
+			BZ	DIEZ		     
+			
+			MOVLW	0x0B		    
+			SUBWF	RESULT,	W	    
+			BZ	ONCE		    
+			
+			MOVLW	0x0C		    
+			SUBWF	RESULT,	W	    
+			BZ	DOCE		   
+			
+			MOVLW	0x0D		  
+			SUBWF	RESULT,	W	   
+			BZ	TRECE		   
+			
+			MOVLW	0x0E		    
+			SUBWF	RESULT,	W	   
+			BZ	CATORCE		   
+			
+			MOVLW	0x0F		    
+			SUBWF	RESULT,	W	    
+			BZ	QUINCE		    
+			
+			
 			BRA	DEFAULT
+			
+			
 CERO:
 						    ;salida 0 en display
 		    MOVLW 00111111B
 		    MOVWF PORTD
 		    GOTO LOOP
+		    
 UNO:
 		    MOVLW 00000110B		    ;salida 1 en display
 		    MOVWF PORTD
 		    GOTO LOOP	    
+		    
 DOS:
 		    MOVLW 01011011B		    ;salida 2 en display
 		    MOVWF PORTD
 		    GOTO LOOP	    
+		    
 TRES:
 		    MOVLW 01001111B		   ;salida 3 en display
 		    MOVWF PORTD
 		    GOTO LOOP
+		    
 CUATRO:						  
 		    MOVLW 01100110B		    ;salida 4 en display
 		    MOVWF PORTD
 		    GOTO LOOP
+
 CINCO:						  
 		    MOVLW 01101101B		    ;salida 5 en display
 		    MOVWF PORTD
@@ -191,11 +223,43 @@ NUEVE:
 		    MOVLW 01101111B		    ;salida 9 en display
 		    MOVWF PORTD
 		    GOTO LOOP
+		    
+DIEZ:						  
+		    MOVLW 01110111B		    ;salida A en display
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+ONCE:						  
+		    MOVLW 01111100B		    ;salida B en display
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+DOCE:						  
+		    MOVLW 00111001B		    ;salida C en display
+		    MOVWF PORTD
+		    GOTO LOOP		    
+		    
+TRECE:						  
+		    MOVLW 01011110B		    ;salida D en display
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+CATORCE:						  
+		    MOVLW 01111001B		    ;salida E en display
+		    MOVWF PORTD
+		    GOTO LOOP	
+		    
+QUINCE:						  
+		    MOVLW 01110001B		    ;salida F en display
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+		    
 DEFAULT:	
 		    MOVLW 00110111B		    ;salida N en display
 		    MOVWF PORTD
 		    GOTO LOOP
-			
+		    
    
     			
 END                       	;fin del programa
