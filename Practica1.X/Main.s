@@ -1,24 +1,24 @@
 #include <xc.inc>
 
 ; CONFIG1L
-  CONFIG  PLLDIV = 5            ; PLL Prescaler Selection bits (Divide by 5 (20 MHz oscillator input))
-  CONFIG  CPUDIV = OSC3_PLL4    ; System Clock Postscaler Selection bits ([Primary Oscillator Src: /3][96 MHz PLL Src: /4])
-  CONFIG  USBDIV = 2            ; USB Clock Selection bit (used in Full-Speed USB mode only; UCFG:FSEN = 1) (USB clock source comes from the 96 MHz PLL divided by 2)
+  CONFIG  PLLDIV = 1            ; PLL Prescaler Selection bits (No prescale (4 MHz oscillator input drives PLL directly))
+  CONFIG  CPUDIV = OSC1_PLL2    ; System Clock Postscaler Selection bits ([Primary Oscillator Src: /1][96 MHz PLL Src: /2])
+  CONFIG  USBDIV = 1            ; USB Clock Selection bit (used in Full-Speed USB mode only; UCFG:FSEN = 1) (USB clock source comes directly from the primary oscillator block with no postscale)
 
 ; CONFIG1H
-  CONFIG  FOSC = HSPLL_HS       ; Oscillator Selection bits (HS oscillator, PLL enabled (HSPLL))
+  CONFIG  FOSC = XT_XT          ; Oscillator Selection bits (XT oscillator (XT))
   CONFIG  FCMEN = OFF           ; Fail-Safe Clock Monitor Enable bit (Fail-Safe Clock Monitor disabled)
   CONFIG  IESO = OFF            ; Internal/External Oscillator Switchover bit (Oscillator Switchover mode disabled)
 
 ; CONFIG2L
   CONFIG  PWRT = ON             ; Power-up Timer Enable bit (PWRT enabled)
-;  CONFIG  BOR = OFF             ; Brown-out Reset Enable bits (Brown-out Reset disabled in hardware and software)
+  ;CONFIG  BOR = ON              ; Brown-out Reset Enable bits (Brown-out Reset enabled in hardware only (SBOREN is disabled))
   CONFIG  BORV = 3              ; Brown-out Reset Voltage bits (Minimum setting 2.05V)
   CONFIG  VREGEN = OFF          ; USB Voltage Regulator Enable bit (USB voltage regulator disabled)
 
 ; CONFIG2H
   CONFIG  WDT = OFF             ; Watchdog Timer Enable bit (WDT disabled (control is placed on the SWDTEN bit))
-  CONFIG  WDTPS = 32768         ; Watchdog Timer Postscale Select bits (1:32768)
+  CONFIG  WDTPS = 1             ; Watchdog Timer Postscale Select bits (1:1)
 
 ; CONFIG3H
   CONFIG  CCP2MX = OFF          ; CCP2 MUX bit (CCP2 input/output is multiplexed with RB3)
@@ -62,17 +62,19 @@
 ; CONFIG7H
   CONFIG  EBTRB = OFF           ; Boot Block Table Read Protection bit (Boot block (000000-0007FFh) is not protected from table reads executed in other blocks)
 
-
-
 ;****************Definicion de variables********************************
 PSECT udata
  INPUT:
+	DS 1
+ INPUT2:
+	DS 1
+RESULTADO:
 	DS 1
 
 ;CONSTANT		MASK	= 0b00001111
 
 ;****************Programa principal **************************************************
-	psect   code;barfunc,local,class=CODE,delta=2 ; PIC10/12/16
+	PSECT   code;barfunc,local,class=CODE,delta=2 ; PIC10/12/16
 	
 			ORG     0x000             	;reset vector
   			GOTO    MAIN              	;go to the main routine
@@ -92,49 +94,105 @@ INITIALIZE:
 MAIN:
 		CALL 	INITIALIZE
 LOOP:
-    	
-			MOVF	PORTB, W ;mover portb al acumulador
-			ANDLW	0b00001111	    ;aplicar and (mascara)
+			MOVF	PORTB, W            ;mover portb al registro input
+			ANDLW	0x0F	            ;aplicar and (mascara)
 			MOVWF   INPUT
+
 			
-			MOVLW	0		    ;mover cero al acumulador
-			SUBWF	INPUT,	W	    ;restar 0 a la entrada
+			MOVF	PORTB, W            ;mover portb al acumulador
+			ANDLW	0xF0	            ;aplicar and (mascara)
+			MOVWF   INPUT2
+			
+			
+			MOVLW	0x00		    ;mover cero al acumulador
+			SUBWF	INPUT,	0,1	    ;restar 0 a la entrada
 			BZ	CERO		    ;caso 0 
 			
-
-CERO:                 
-                        BSF PORTD, 0
-			BSF PORTD, 1
-			BSF PORTD, 2
-			BSF PORTD, 3
-			BSF PORTD, 4
-			BSF PORTD, 5
-			BCF PORTD, 6
-			GOTO LOOP 
+			MOVLW	0x02		    ;mover cero al acumulador
+			SUBWF	INPUT,	W	    ;restar 0 a la entrada
+			BZ	DOS		    ;caso 0 
 			
-UNO:                 
-                        BCF PORTD, 0
-			BSF PORTD, 1
-			BSF PORTD, 2
-			BCF PORTD, 3
-			BCF PORTD, 4
-			BCF PORTD, 5
-			BCF PORTD, 6
-CUATRO:                 
-                        BCF PORTD, 0
-			BSF PORTD, 1
-			BSF PORTD, 2
-			BCF PORTD, 3
-			BCF PORTD, 4
-			BSF PORTD, 5
-			BSF PORTD, 6
+			MOVLW	0x03		    ;mover cero al acumulador
+			SUBWF	INPUT,	W	    ;restar 0 a la entrada
+			BZ	TRES		    ;caso 0 
 			
+			MOVLW	0x04		    ;mover cero al acumulador
+			SUBWF	INPUT,	W	    ;restar 0 a la entrada
+			BZ	CUATRO		    ;caso 0 
+			
+			MOVLW	0x05		    ;mover cero al acumulador
+			SUBWF	INPUT,	W	    ;restar 0 a la entrada
+			BZ	CINCO		    ;caso 0 
+			
+			MOVLW	0x06		    ;mover cero al acumulador
+			SUBWF	INPUT,	W	    ;restar 0 a la entrada
+			BZ	SEIS		    ;caso 0
+			
+			MOVLW	0x07		    ;mover cero al acumulador
+			SUBWF	INPUT,	W	    ;restar 0 a la entrada
+			BZ	SIETE		    ;caso 0 
+			
+			MOVLW	0x08		    ;mover cero al acumulador
+			SUBWF	INPUT,	W	    ;restar 0 a la entrada
+			BZ	OCHO		    ;caso 0 
+			
+			MOVLW	0x09		    ;mover cero al acumulador
+			SUBWF	INPUT,	W	    ;restar 0 a la entrada
+			BZ	NUEVE		    ;caso 0 
+			
+			
+			BRA	DEFAULT
+CERO:
 						    ;salida 0 en display
-		
-		
-		
+		    MOVLW 00111111B
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+DOS:
+		    MOVLW 01011011B		    ;salida 2 en display
+		    MOVWF PORTD
+		    GOTO LOOP	    
+		    
+TRES:
+		    MOVLW 01001111B		   ;salida 3 en display
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+CUATRO:						  
+		    MOVLW 01100110B		    ;salida 4 en display
+		    MOVWF PORTD
+		    GOTO LOOP
+
+CINCO:						  
+		    MOVLW 01101101B		    ;salida 5 en display
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+SEIS:						  
+		    MOVLW 01111101B		    ;salida 6 en display
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+SIETE:						  
+		    MOVLW 00000111B		    ;salida 7 en display
+		    MOVWF PORTD
+		    GOTO LOOP
+OCHO:						  
+		    MOVLW 01111111B		    ;salida 8 en display
+		    MOVWF PORTD
+		    GOTO LOOP
+NUEVE:						  
+		    MOVLW 01101111B		    ;salida 9 en display
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+DEFAULT:	
+		    MOVLW 00110111B		  ;salida N en display
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+		    
 			
    
     			
 			END                       	;fin del programa
-
