@@ -5506,14 +5506,14 @@ ENDM
 
 ;****************Definicion de variables********************************
 PSECT udata
- INPUT:
+INPUT:
  DS 1
- INPUT2:
+INPUT2:
  DS 1
-RESULTADO:
+RESULT:
  DS 1
 
-;CONSTANT MASK = 0b00001111
+;
 
 ;****************Programa principal **************************************************
  PSECT code;barfunc,local,class=CODE,delta=2 ; PIC10/12/16
@@ -5521,7 +5521,7 @@ RESULTADO:
    ORG 0x000 ;reset vector
      GOTO MAIN ;go to the main routine
 
-INITIALIZE:
+INICIALIZACION:
 
    MOVLW 0x0F ;todas entradas digitales
    MOVWF ADCON1,c
@@ -5534,33 +5534,38 @@ INITIALIZE:
    RETURN
 
 MAIN:
-  CALL INITIALIZE
+  CALL INICIALIZACION
 LOOP:
    MOVF PORTB, W ;mover portb al registro input
    ANDLW 0x0F ;aplicar and (mascara)
    MOVWF INPUT
 
-
-
    MOVF PORTB, W ;mover portb al acumulador
    ANDLW 0xF0 ;aplicar and (mascara)
    MOVWF INPUT2
+   RRCF INPUT2, 1, 0
+   RRCF INPUT2, 1, 0
+   RRCF INPUT2, 1, 0
+   RRCF INPUT2, 1, 0
 
+   MOVF INPUT
+   ADDWF INPUT2,W
+   MOVWF RESULT
 
    MOVLW 0x00 ;mover cero al acumulador
-   SUBWF INPUT, 0,1 ;restar 0 a la entrada
+   SUBWF RESULT, 0,1 ;restar 0 a la entrada
    BZ CERO ;caso 0
 
    MOVLW 0x02 ;mover cero al acumulador
-   SUBWF INPUT, W ;restar 0 a la entrada
+   SUBWF RESULT, W ;restar 0 a la entrada
    BZ DOS ;caso 0
 
    MOVLW 0x03 ;mover cero al acumulador
-   SUBWF INPUT, W ;restar 0 a la entrada
+   SUBWF RESULT, W ;restar 0 a la entrada
    BZ TRES ;caso 0
 
    MOVLW 0x04 ;mover cero al acumulador
-   SUBWF INPUT, W ;restar 0 a la entrada
+   SUBWF RESULT, W ;restar 0 a la entrada
    BZ CUATRO ;caso 0
 
    BRA DEFAULT
@@ -5581,7 +5586,7 @@ TRES:
       GOTO LOOP
 
 CUATRO:
-      MOVLW 01001111B ;salida 4 en display
+      MOVLW 01001111B ;salida 3 en display
       MOVWF PORTD
       GOTO LOOP
 
