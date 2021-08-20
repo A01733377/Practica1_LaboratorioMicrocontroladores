@@ -144,8 +144,33 @@ LOOP:
 			SUBWF	INPUT,	W	    ;restar 0 a la entrada
 			BZ	NUEVE		    ;caso 0 
 			
+			MOVLW	0x0A		    
+			SUBWF	INPUT,	W	    
+			BZ	DIEZ		     
+			
+			MOVLW	0x0B		    
+			SUBWF	INPUT,	W	    
+			BZ	ONCE		    
+			
+			MOVLW	0x0C		    
+			SUBWF	INPUT,	W	    
+			BZ	DOCE		   
+			
+			MOVLW	0x0D		  
+			SUBWF	INPUT,	W	   
+			BZ	TRECE		   
+			
+			MOVLW	0x0E		    
+			SUBWF	INPUT,	W	   
+			BZ	CATORCE		   
+			
+			MOVLW	0x0F		    
+			SUBWF	INPUT,	W	    
+			BZ	QUINCE		    
+			
 			
 			BRA	DEFAULT
+			
 CERO:
 						    ;salida 0 en display
 		    MOVLW 00111111B
@@ -195,8 +220,39 @@ NUEVE:
 		    MOVWF PORTD
 		    GOTO LOOP
 		    
+DIEZ:						  
+		    MOVLW 01110111B		    ;salida A en display
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+ONCE:						  
+		    MOVLW 00011111B		    ;salida B en display
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+DOCE:						  
+		    MOVLW 01001110B		    ;salida C en display
+		    MOVWF PORTD
+		    GOTO LOOP		    
+		    
+TRECE:						  
+		    MOVLW 00111101B		    ;salida D en display
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+CATORCE:						  
+		    MOVLW 0101111B		    ;salida E en display
+		    MOVWF PORTD
+		    GOTO LOOP	
+		    
+QUINCE:						  
+		    MOVLW 01000111B		    ;salida F en display
+		    MOVWF PORTD
+		    GOTO LOOP
+		    
+		    
 DEFAULT:	
-		    MOVLW 00110111B		  ;salida N en display
+		    MOVLW 00110111B		    ;salida N en display
 		    MOVWF PORTD
 		    GOTO LOOP
 		    
